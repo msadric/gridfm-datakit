@@ -93,6 +93,120 @@ This paper is the conceptual basis for the GridFM project as a whole,
 including `gridfm-datakit` and `gridfm-graphkit`, and predates GENCO and the
 datakit paper.
 
+## Local environment setup (2026-08-13)
+
+Repository: `gridfm-datakit`
+
+Set up the repository to run locally with `uv`.
+
+- Created `.venv` with Python 3.12.11, within the project's required range of
+  3.10 to 3.12. Already excluded by `.gitignore`.
+- Installed the package with the `test` and `dev` extras.
+- Ran `uv lock` and committed `uv.lock`, so `uv sync` reproduces the same
+  environment.
+- Confirmed the CLI works (`gridfm_datakit --help`) and a subset of the pure
+  Python test suite passes (28 tests, `test_topology_perturbation.py` and
+  `test_generator_perturbation.py`).
+- Installed the Julia side with `gridfm_datakit setup_pm`. Julia itself
+  (version 1.12.5) was already present on the machine. This installs
+  PowerModels, Ipopt, and Memento, and is required for actual data
+  generation, not just for importing the package.
+
+## Experiments (2026-08-13 to 2026-08-14)
+
+Repository: `gridfm-datakit`
+
+All experiments use `case24_ieee_rts` unless stated otherwise, with a fixed
+seed of 42 for comparability. Configs live in `scripts/config/smoke_test*.yaml`.
+Output data is written under `data_out/`, which is gitignored, so only the
+configs are committed. Every run was checked with `gridfm_datakit validate`
+and passed all checks.
+
+### Smoke test (baseline)
+
+Config: `smoke_test.yaml`. 50 load scenarios, 5 random topology variants each,
+PF mode. 250 scenario-partitions generated in about 30 seconds. No errors.
+This confirmed the full pipeline works after setup: load perturbation, topology
+perturbation, AC and DC power flow through Julia, and parquet output.
+
+### PF vs OPF
+
+Configs: `smoke_test.yaml` (PF) vs `smoke_test_opf.yaml` (OPF), otherwise
+identical settings.
+
+| | PF | OPF |
+| --- | --- | --- |
+| Scenario-partitions | 250 | 248 (2 dropped, infeasible for OPF) |
+| Overloaded branches (> 1.0 loading) | 7 | 0 |
+| Binding branch constraints (>= 0.99) | 51 | 56 |
+| Mean AC solve time | 0.0007s | 0.0212s (about 30x slower) |
+| Mean DC solve time | 0.0003s | 0.0047s (about 16x slower) |
+
+Finding: PF mode is fast and allows operating limit violations by design. OPF
+mode is much slower per scenario but guarantees a cost optimal, feasible
+dispatch. Some scenario and topology combinations that PF can solve are
+infeasible for OPF and get dropped.
+
+### Topology perturbation: random vs n_minus_k
+
+Configs: `smoke_test.yaml` (random) vs `smoke_test_nmk.yaml` (n_minus_k),
+otherwise identical settings.
+
+| | random | n_minus_k |
+| --- | --- | --- |
+| Topologies per load scenario | 5 (sampled) | 38 (exhaustive, all N-1 outages) |
+| Total scenario-partitions | 250 | 1900 |
+| Overloaded branches (> 1.0) | 7 (2.8%) | 69 (3.6%) |
+| Binding constraints (>= 0.99) | 51 | 455 |
+
+Finding: `n_minus_k` ignores the `n_topology_variants` and `elements` settings
+and instead enumerates every possible single component outage for the grid.
+It is not a sampling strategy with a configurable size, it produces an
+exhaustive and much larger dataset per load scenario. The overload rate is
+similar between the two modes here, so random sampling looks representative
+of the full N-1 space for this small grid, but that may not hold for larger
+grids.
+
+### Scale test: Texas2k (2000 buses)
+
+Config: `smoke_test_texas2k.yaml`, a scaled down version of the repository's
+existing `Texas2k_case1_2016summerpeak.yaml` (20 scenarios and 2 topology
+variants instead of 10000 and 20). PF mode, grid loaded from file.
+
+- 34 of 40 scenario-partitions succeeded. 3 of 20 base scenarios (15%) failed
+  with `OPF did not converge: ITERATION_LIMIT`. This happens even in PF mode,
+  because the library runs an OPF first to get a base dispatch before
+  applying perturbations.
+- Mean AC solve time was 0.069s and mean DC solve time was 0.029s, about 100x
+  slower than the 24 bus grid.
+- Total wall time was about 2 minutes 10 seconds for 20 base scenarios, most
+  of it in finding the load scaling upper bound and processing.
+
+Finding: the full `Texas2k_case1_2016summerpeak.yaml` config targets 10000
+scenarios and 20 topology variants, which is 200000 scenario-partitions. Based
+on this test, that run should be budgeted in hours, not minutes, and a similar
+convergence dropout rate should be expected unless `global_range` or
+`max_scaling_factor` are tightened.
+
+### Admittance perturbation sigma sweep
+
+Configs: `smoke_test_admittance_low.yaml` (sigma 0.05) vs
+`smoke_test_admittance_high.yaml` (sigma 0.8), otherwise identical to
+`smoke_test.yaml` (which uses sigma 0.2).
+
+| | sigma 0.05 | sigma 0.8 |
+| --- | --- | --- |
+| Y-bus G standard deviation | 7.08 | 21.29 |
+| Y-bus B standard deviation | 51.29 | 69.07 |
+| Overloaded branches (> 1.0) | 7 | 13 |
+| Binding constraints (>= 0.99) | 58 | 65 |
+
+Finding: raising `admittance_perturbation.sigma` increases the spread of the
+Y-bus admittance values as expected, and this carries through to more branch
+overloads and binding constraints in the resulting PF data. The setting
+behaves as documented and gives a usable lever for controlling dataset
+diversity.
+
 ## Commit Log
 
 Record completed work in this format:
@@ -100,3 +214,11 @@ Record completed work in this format:
 | Repository | Commit | Summary |
 | --- | --- | --- |
 | `<repository>` | `<short hash>` | Brief description of the logical change |
+| `gridfm-datakit` | `c764512` | Add background reading references and documentation summary |
+| `gridfm-datakit` | `3f746a9` | Add Joule perspective paper and summary |
+| `gridfm-datakit` | `3c5ebe5` | Add uv.lock for reproducible installs |
+| `gridfm-datakit` | `91e01cb` | Add smoke-test config for quick pipeline verification |
+| `gridfm-datakit` | `5b154ae` | Add OPF smoke-test config for PF vs OPF comparison |
+| `gridfm-datakit` | `9968db5` | Add n_minus_k topology config for comparison against random sampling |
+| `gridfm-datakit` | `54caa98` | Add Texas2k scale-test config |
+| `gridfm-datakit` | `bcfca08` | Add admittance-perturbation sigma sweep configs |
