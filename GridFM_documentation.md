@@ -30,6 +30,8 @@ Files saved:
 - `docs/references/genco_arxiv_2608.09921.pdf`
 - `docs/references/datakit_arxiv_2512.14658.pdf`
 - `docs/references/web_sources_summary.md`
+- `docs/references/joule_perspective_S2542-4351(24)00470-7.pdf` (added manually
+  by the user on 2026-08-13, since automated fetch was blocked)
 
 ### GENCO (IBM Research)
 
@@ -69,11 +71,27 @@ Its stated goal is to enable foundation models for power grids with a
 significant computation speed advantage over classical tools. `gridfm-datakit`
 and `gridfm-graphkit` are its two repositories.
 
-### Open question
+### Joule perspective paper
 
-The Joule perspective paper has not been read. It needs to be accessed manually
-through a subscription or institutional access, since automated fetching is
-blocked.
+Title: "Foundation models for the electric power grid." Published in Joule,
+December 18, 2024. Authors include Hendrik F. Hamann, Blazhe Gjorgiev, Thomas
+Brunschwiler, Alban Puech, and a large group of co-authors from IBM Research,
+Hydro-Quebec, NREL, Argonne, ETH Zurich, and other institutions.
+
+The paper argues that foundation models, the kind used for language and
+weather, can be developed for the electric power grid. It calls this class of
+models grid foundation models, or GridFMs. The authors claim GridFMs could
+speed up computation by at least 3 to 4 orders of magnitude compared to
+classical methods, and that their generalizability lets stakeholders fine-tune
+one model for their own proprietary data cheaply and at scale. The paper
+covers the strengths and weaknesses of the approach given a changing grid, and
+lays out a practical road map for GridFM-v0, a first grid foundation model for
+power flow based on graph neural networks. It closes by discussing downstream
+use cases for this and future GridFMs.
+
+This paper is the conceptual basis for the GridFM project as a whole,
+including `gridfm-datakit` and `gridfm-graphkit`, and predates GENCO and the
+datakit paper.
 
 ## Commit Log
 
