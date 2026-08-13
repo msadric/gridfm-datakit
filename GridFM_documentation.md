@@ -207,6 +207,124 @@ overloads and binding constraints in the resulting PF data. The setting
 behaves as documented and gives a usable lever for controlling dataset
 diversity.
 
+## ML task coverage (2026-08-14)
+
+Repository: `gridfm-datakit`, plus a check against `gridfm-graphkit`
+
+To answer the question of what ML tasks this data actually supports, the
+`gridfm-graphkit` sister repo was checked directly for implemented task
+types, rather than guessing from the schema alone. It registers three tasks,
+all built as a shared "masked node feature reconstruction" pattern
+(`ReconstructionTask` base class in `gridfm_graphkit/tasks/`):
+
+- `PowerFlow` — reads `gridfm-datakit` PF-mode output, including the
+  operating-limit-violated scenarios PF mode intentionally produces.
+- `OptimalPowerFlow` — reads OPF-mode output, always feasible and
+  cost-optimal by construction.
+- `StateEstimation` — reconstructs full state from a masked/noisy subset of
+  measurements, simulated on top of the full ground truth.
+
+`gridfm-graphkit`'s dataset loader
+(`gridfm_graphkit/datasets/powergrid_hetero_dataset.py`) reads
+`bus_data.parquet`, `gen_data.parquet`, and `branch_data.parquet` directly by
+filename, so the schema is a real contract between the two repos, not just
+a convenient CSV dump.
+
+Beyond those three implemented tasks, the schema also supports (not yet
+built as registered tasks in `gridfm-graphkit`, would need custom code):
+contingency/security screening and topology identification (from
+`br_status` plus the `n_minus_k` exhaustive outage labels), line
+resistance/reactance estimation from flows (using the admittance-perturbed
+branches), DC-to-AC correction (both are stored for the same scenario),
+solver-runtime/convergence-difficulty prediction (from `runtime_data.parquet`
+and Ipopt logs), infeasibility/loadability-boundary prediction (from
+`error.log` and the scaling-factor search in `scenarios_*.log`), and
+cross-grid or cross-cost-regime generalization studies (just a config sweep).
+
+What the data cannot support at all: dynamics (frequency, rotor angle,
+transient/small-signal stability), unit commitment (no ramping or multi
+period coupling, every scenario is independent), and locational marginal
+prices (PowerModels computes duals, but the output schema in
+`gridfm_datakit/utils/column_names.py` has no column for them, so this would
+need a code change first).
+
+## Overnight batch dataset generation plan (2026-08-14)
+
+Repository: `gridfm-datakit`
+
+Following the ML task coverage discussion above, the plan is to generate one
+dataset per task family, at small, medium, and large grid scale where it
+makes sense, and run the whole batch overnight.
+
+Decisions made with the user before building this:
+
+- No hard time budget (12+ hours is fine).
+- Run datasets sequentially, one at a time, each using all 32 cores
+  (`num_processes: 32`), rather than several jobs competing for cores at
+  once.
+- Keep the batch tied to this Claude Code session rather than launching a
+  detached `nohup` process. This was an explicit choice by the user, made
+  knowing that if the session ends, the batch stops with it.
+- Add a medium grid tier between the small and large ones for each dataset
+  group, not just small/big extremes.
+
+To size the exhaustive `n_minus_k` contingency datasets correctly (the
+number of topologies scales with branch count, since `k=1` yields
+`branches + 1` topologies per load scenario), bus/branch/generator counts
+were measured directly by loading each candidate grid:
+
+| Grid | Buses | Branches | Generators |
+| --- | --- | --- | --- |
+| case14_ieee | 14 | 20 | 5 |
+| case24_ieee_rts | 24 | 38 | 33 |
+| case57_ieee | 57 | 80 | 7 |
+| case118_ieee | 118 | 186 | 54 |
+| case300_ieee | 300 | 411 | 69 |
+| case500_goc | 500 | 733 | 224 |
+| case2000_goc | 2000 | 3639 | 384 |
+| Texas2k (file-based) | 2000 | 3220 | 544 |
+
+The eight dataset groups, each mapped to a task family:
+
+1. **PF baseline** (`case14_ieee` / `case118_ieee` / `case2000_goc`) — for
+   the `PowerFlow` task.
+2. **OPF baseline** (`case24_ieee_rts` / `case118_ieee` / `case500_goc`) —
+   for the `OptimalPowerFlow` task.
+3. **Contingency exhaustive** (`case24_ieee_rts` / `case118_ieee` /
+   `case2000_goc`, `n_minus_k`, `k=1`) — for contingency screening and
+   topology identification.
+4. **Line parameter estimation** (`case24_ieee_rts` / `case118_ieee`, fixed
+   topology, wide admittance sweep `sigma=1.5`) — for R/X inference from
+   flows.
+5. **Solver difficulty** (all 7 grids from the sizing table above, Ipopt
+   logging enabled, fast solvers disabled so Ipopt actually logs) — for
+   runtime/convergence-difficulty prediction.
+6. **Loadability boundary** (`case57_ieee` / `case300_ieee` /
+   `case2000_goc`, higher per-bus load noise `sigma=0.35`) — for
+   infeasibility-boundary labels, read from `error.log`.
+7. **Cost-regime sweep** (`case57_ieee`, OPF, `cost_perturbation` with
+   sigma in `{0.2, 1.0, 2.5}`) — for generalization across cost
+   distributions.
+8. **Cross-grid generalization** (all 7 grids from the sizing table,
+   identical perturbation config) — for scale/topology transfer studies.
+
+DC-to-AC correction data needs no separate dataset: `include_dc_res: true`
+is set on every job above, so paired AC/DC results come for free.
+
+### Files
+
+- `scripts/overnight_batch/generate_configs.py` — builds all 30 dataset
+  configs (one YAML per dataset under `scripts/config/overnight/`) plus a
+  `manifest.json` describing each dataset's purpose, grid, mode, and
+  scenario count.
+
+### Open item
+
+The sequential driver script that runs every config in the manifest one
+after another (`run_all.py`) was drafted but the file write was denied by
+the user, so it has not been created yet. The config generator itself has
+been run and the configs exist, but the batch has not started.
+
 ## Commit Log
 
 Record completed work in this format:
@@ -222,3 +340,5 @@ Record completed work in this format:
 | `gridfm-datakit` | `9968db5` | Add n_minus_k topology config for comparison against random sampling |
 | `gridfm-datakit` | `54caa98` | Add Texas2k scale-test config |
 | `gridfm-datakit` | `bcfca08` | Add admittance-perturbation sigma sweep configs |
+| `gridfm-datakit` | `65bf770` | Add full capability reference (docs/CAPABILITIES.md) |
+| `gridfm-datakit` | `b10ed07` | Document the pfdelta/opf_data converters and scripts/ tooling |
