@@ -1,0 +1,281 @@
+[
+  {
+    "name": "pf_small_case14",
+    "purpose": "PowerFlow task baseline (small grid)",
+    "config_path": "scripts/config/overnight/pf_small_case14.yaml",
+    "network": "case14_ieee",
+    "mode": "pf",
+    "scenarios": 3000,
+    "status": "pending"
+  },
+  {
+    "name": "pf_medium_case118",
+    "purpose": "PowerFlow task baseline (medium grid)",
+    "config_path": "scripts/config/overnight/pf_medium_case118.yaml",
+    "network": "case118_ieee",
+    "mode": "pf",
+    "scenarios": 2000,
+    "status": "pending"
+  },
+  {
+    "name": "pf_large_case2000",
+    "purpose": "PowerFlow task baseline (large grid)",
+    "config_path": "scripts/config/overnight/pf_large_case2000.yaml",
+    "network": "case2000_goc",
+    "mode": "pf",
+    "scenarios": 1000,
+    "status": "pending"
+  },
+  {
+    "name": "opf_small_case24",
+    "purpose": "OptimalPowerFlow task baseline (small grid)",
+    "config_path": "scripts/config/overnight/opf_small_case24.yaml",
+    "network": "case24_ieee_rts",
+    "mode": "opf",
+    "scenarios": 1000,
+    "status": "pending"
+  },
+  {
+    "name": "opf_medium_case118",
+    "purpose": "OptimalPowerFlow task baseline (medium grid)",
+    "config_path": "scripts/config/overnight/opf_medium_case118.yaml",
+    "network": "case118_ieee",
+    "mode": "opf",
+    "scenarios": 400,
+    "status": "pending"
+  },
+  {
+    "name": "opf_large_case500",
+    "purpose": "OptimalPowerFlow task baseline (large grid)",
+    "config_path": "scripts/config/overnight/opf_large_case500.yaml",
+    "network": "case500_goc",
+    "mode": "opf",
+    "scenarios": 150,
+    "status": "pending"
+  },
+  {
+    "name": "contingency_small_case24",
+    "purpose": "Exhaustive N-1 contingency screening / topology identification (small grid)",
+    "config_path": "scripts/config/overnight/contingency_small_case24.yaml",
+    "network": "case24_ieee_rts",
+    "mode": "pf",
+    "scenarios": 500,
+    "status": "pending"
+  },
+  {
+    "name": "contingency_medium_case118",
+    "purpose": "Exhaustive N-1 contingency screening / topology identification (medium grid)",
+    "config_path": "scripts/config/overnight/contingency_medium_case118.yaml",
+    "network": "case118_ieee",
+    "mode": "pf",
+    "scenarios": 300,
+    "status": "pending"
+  },
+  {
+    "name": "contingency_large_case2000",
+    "purpose": "Exhaustive N-1 contingency screening / topology identification (large grid)",
+    "config_path": "scripts/config/overnight/contingency_large_case2000.yaml",
+    "network": "case2000_goc",
+    "mode": "pf",
+    "scenarios": 50,
+    "status": "pending"
+  },
+  {
+    "name": "line_param_small_case24",
+    "purpose": "Line R/X parameter estimation from flows (fixed topology, wide admittance sweep, small grid)",
+    "config_path": "scripts/config/overnight/line_param_small_case24.yaml",
+    "network": "case24_ieee_rts",
+    "mode": "pf",
+    "scenarios": 3000,
+    "status": "pending"
+  },
+  {
+    "name": "line_param_medium_case118",
+    "purpose": "Line R/X parameter estimation from flows (fixed topology, wide admittance sweep, medium grid)",
+    "config_path": "scripts/config/overnight/line_param_medium_case118.yaml",
+    "network": "case118_ieee",
+    "mode": "pf",
+    "scenarios": 2000,
+    "status": "pending"
+  },
+  {
+    "name": "solver_difficulty_case14_ieee",
+    "purpose": "Solver runtime/convergence-difficulty prediction (case14_ieee)",
+    "config_path": "scripts/config/overnight/solver_difficulty_case14_ieee.yaml",
+    "network": "case14_ieee",
+    "mode": "pf",
+    "scenarios": 300,
+    "status": "pending"
+  },
+  {
+    "name": "solver_difficulty_case24_ieee_rts",
+    "purpose": "Solver runtime/convergence-difficulty prediction (case24_ieee_rts)",
+    "config_path": "scripts/config/overnight/solver_difficulty_case24_ieee_rts.yaml",
+    "network": "case24_ieee_rts",
+    "mode": "pf",
+    "scenarios": 300,
+    "status": "pending"
+  },
+  {
+    "name": "solver_difficulty_case57_ieee",
+    "purpose": "Solver runtime/convergence-difficulty prediction (case57_ieee)",
+    "config_path": "scripts/config/overnight/solver_difficulty_case57_ieee.yaml",
+    "network": "case57_ieee",
+    "mode": "pf",
+    "scenarios": 300,
+    "status": "pending"
+  },
+  {
+    "name": "solver_difficulty_case118_ieee",
+    "purpose": "Solver runtime/convergence-difficulty prediction (case118_ieee)",
+    "config_path": "scripts/config/overnight/solver_difficulty_case118_ieee.yaml",
+    "network": "case118_ieee",
+    "mode": "pf",
+    "scenarios": 300,
+    "status": "pending"
+  },
+  {
+    "name": "solver_difficulty_case300_ieee",
+    "purpose": "Solver runtime/convergence-difficulty prediction (case300_ieee)",
+    "config_path": "scripts/config/overnight/solver_difficulty_case300_ieee.yaml",
+    "network": "case300_ieee",
+    "mode": "pf",
+    "scenarios": 300,
+    "status": "pending"
+  },
+  {
+    "name": "solver_difficulty_case500_goc",
+    "purpose": "Solver runtime/convergence-difficulty prediction (case500_goc)",
+    "config_path": "scripts/config/overnight/solver_difficulty_case500_goc.yaml",
+    "network": "case500_goc",
+    "mode": "pf",
+    "scenarios": 300,
+    "status": "pending"
+  },
+  {
+    "name": "solver_difficulty_case2000_goc",
+    "purpose": "Solver runtime/convergence-difficulty prediction (case2000_goc)",
+    "config_path": "scripts/config/overnight/solver_difficulty_case2000_goc.yaml",
+    "network": "case2000_goc",
+    "mode": "pf",
+    "scenarios": 300,
+    "status": "pending"
+  },
+  {
+    "name": "loadability_case57_ieee",
+    "purpose": "Loadability-limit / infeasibility-boundary labels (case57_ieee; see error.log + scenarios_*.log for boundary points)",
+    "config_path": "scripts/config/overnight/loadability_case57_ieee.yaml",
+    "network": "case57_ieee",
+    "mode": "pf",
+    "scenarios": 500,
+    "status": "pending"
+  },
+  {
+    "name": "loadability_case300_ieee",
+    "purpose": "Loadability-limit / infeasibility-boundary labels (case300_ieee; see error.log + scenarios_*.log for boundary points)",
+    "config_path": "scripts/config/overnight/loadability_case300_ieee.yaml",
+    "network": "case300_ieee",
+    "mode": "pf",
+    "scenarios": 500,
+    "status": "pending"
+  },
+  {
+    "name": "loadability_case2000_goc",
+    "purpose": "Loadability-limit / infeasibility-boundary labels (case2000_goc; see error.log + scenarios_*.log for boundary points)",
+    "config_path": "scripts/config/overnight/loadability_case2000_goc.yaml",
+    "network": "case2000_goc",
+    "mode": "pf",
+    "scenarios": 500,
+    "status": "pending"
+  },
+  {
+    "name": "cost_sweep_sigma0.2",
+    "purpose": "Cost-distribution generalization (OPF, cost_perturbation sigma=0.2)",
+    "config_path": "scripts/config/overnight/cost_sweep_sigma0.2.yaml",
+    "network": "case57_ieee",
+    "mode": "opf",
+    "scenarios": 500,
+    "status": "pending"
+  },
+  {
+    "name": "cost_sweep_sigma1.0",
+    "purpose": "Cost-distribution generalization (OPF, cost_perturbation sigma=1.0)",
+    "config_path": "scripts/config/overnight/cost_sweep_sigma1.0.yaml",
+    "network": "case57_ieee",
+    "mode": "opf",
+    "scenarios": 500,
+    "status": "pending"
+  },
+  {
+    "name": "cost_sweep_sigma2.5",
+    "purpose": "Cost-distribution generalization (OPF, cost_perturbation sigma=2.5)",
+    "config_path": "scripts/config/overnight/cost_sweep_sigma2.5.yaml",
+    "network": "case57_ieee",
+    "mode": "opf",
+    "scenarios": 500,
+    "status": "pending"
+  },
+  {
+    "name": "crossgrid_case14_ieee",
+    "purpose": "Cross-grid-size generalization, identical perturbation config (case14_ieee)",
+    "config_path": "scripts/config/overnight/crossgrid_case14_ieee.yaml",
+    "network": "case14_ieee",
+    "mode": "pf",
+    "scenarios": 800,
+    "status": "pending"
+  },
+  {
+    "name": "crossgrid_case24_ieee_rts",
+    "purpose": "Cross-grid-size generalization, identical perturbation config (case24_ieee_rts)",
+    "config_path": "scripts/config/overnight/crossgrid_case24_ieee_rts.yaml",
+    "network": "case24_ieee_rts",
+    "mode": "pf",
+    "scenarios": 800,
+    "status": "pending"
+  },
+  {
+    "name": "crossgrid_case57_ieee",
+    "purpose": "Cross-grid-size generalization, identical perturbation config (case57_ieee)",
+    "config_path": "scripts/config/overnight/crossgrid_case57_ieee.yaml",
+    "network": "case57_ieee",
+    "mode": "pf",
+    "scenarios": 800,
+    "status": "pending"
+  },
+  {
+    "name": "crossgrid_case118_ieee",
+    "purpose": "Cross-grid-size generalization, identical perturbation config (case118_ieee)",
+    "config_path": "scripts/config/overnight/crossgrid_case118_ieee.yaml",
+    "network": "case118_ieee",
+    "mode": "pf",
+    "scenarios": 800,
+    "status": "pending"
+  },
+  {
+    "name": "crossgrid_case300_ieee",
+    "purpose": "Cross-grid-size generalization, identical perturbation config (case300_ieee)",
+    "config_path": "scripts/config/overnight/crossgrid_case300_ieee.yaml",
+    "network": "case300_ieee",
+    "mode": "pf",
+    "scenarios": 800,
+    "status": "pending"
+  },
+  {
+    "name": "crossgrid_case500_goc",
+    "purpose": "Cross-grid-size generalization, identical perturbation config (case500_goc)",
+    "config_path": "scripts/config/overnight/crossgrid_case500_goc.yaml",
+    "network": "case500_goc",
+    "mode": "pf",
+    "scenarios": 800,
+    "status": "pending"
+  },
+  {
+    "name": "crossgrid_case2000_goc",
+    "purpose": "Cross-grid-size generalization, identical perturbation config (case2000_goc)",
+    "config_path": "scripts/config/overnight/crossgrid_case2000_goc.yaml",
+    "network": "case2000_goc",
+    "mode": "pf",
+    "scenarios": 800,
+    "status": "pending"
+  }
+]

@@ -313,10 +313,11 @@ is set on every job above, so paired AC/DC results come for free.
 
 ### Files
 
-- `scripts/overnight_batch/generate_configs.py` — builds all 30 dataset
+- `scripts/overnight_batch/generate_configs.py` — builds all 31 dataset
   configs (one YAML per dataset under `scripts/config/overnight/`) plus a
   `manifest.json` describing each dataset's purpose, grid, mode, and
-  scenario count.
+  scenario count. Has been run; the configs and manifest exist under
+  `scripts/config/overnight/`.
 
 ### Open item
 

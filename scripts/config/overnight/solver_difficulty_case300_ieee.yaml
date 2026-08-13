@@ -1,0 +1,39 @@
+network:
+  name: case300_ieee
+  source: pglib
+  network_dir: scripts/grids
+load:
+  generator: agg_load_profile
+  agg_profile: default
+  scenarios: 300
+  sigma: 0.2
+  change_reactive_power: true
+  global_range: 0.4
+  max_scaling_factor: 4.0
+  step_size: 0.1
+  start_scaling_factor: 1.0
+topology_perturbation:
+  type: random
+  k: 1
+  n_topology_variants: 3
+  elements:
+  - branch
+  - gen
+generation_perturbation:
+  type: cost_permutation
+  sigma: 1.0
+admittance_perturbation:
+  type: random_perturbation
+  sigma: 0.2
+settings:
+  num_processes: 32
+  data_dir: ./data_out/overnight/solver_difficulty_case300_ieee
+  large_chunk_size: 300
+  overwrite: true
+  mode: pf
+  include_dc_res: true
+  enable_solver_logs: true
+  pf_fast: false
+  dcpf_fast: false
+  max_iter: 200
+  seed: 42
