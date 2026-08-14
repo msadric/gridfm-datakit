@@ -121,8 +121,11 @@
     "network": "case24_ieee_rts",
     "mode": "pf",
     "scenarios": 3000,
-    "status": "running",
-    "started_at": "2026-08-14 10:23:27"
+    "status": "done",
+    "started_at": "2026-08-14 10:23:27",
+    "finished_at": "2026-08-14 10:27:23",
+    "elapsed_seconds": 236.1,
+    "returncode": 0
   },
   {
     "name": "line_param_medium_case118",
@@ -131,7 +134,11 @@
     "network": "case118_ieee",
     "mode": "pf",
     "scenarios": 2000,
-    "status": "pending"
+    "status": "done",
+    "started_at": "2026-08-14 10:27:23",
+    "finished_at": "2026-08-14 10:31:32",
+    "elapsed_seconds": 249.1,
+    "returncode": 0
   },
   {
     "name": "solver_difficulty_case14_ieee",
@@ -140,7 +147,11 @@
     "network": "case14_ieee",
     "mode": "pf",
     "scenarios": 300,
-    "status": "pending"
+    "status": "done",
+    "started_at": "2026-08-14 10:31:32",
+    "finished_at": "2026-08-14 10:32:27",
+    "elapsed_seconds": 54.1,
+    "returncode": 0
   },
   {
     "name": "solver_difficulty_case24_ieee_rts",
@@ -149,7 +160,11 @@
     "network": "case24_ieee_rts",
     "mode": "pf",
     "scenarios": 300,
-    "status": "pending"
+    "status": "done",
+    "started_at": "2026-08-14 10:32:27",
+    "finished_at": "2026-08-14 10:33:23",
+    "elapsed_seconds": 56.0,
+    "returncode": 0
   },
   {
     "name": "solver_difficulty_case57_ieee",
@@ -158,7 +173,11 @@
     "network": "case57_ieee",
     "mode": "pf",
     "scenarios": 300,
-    "status": "pending"
+    "status": "done",
+    "started_at": "2026-08-14 10:33:23",
+    "finished_at": "2026-08-14 10:34:20",
+    "elapsed_seconds": 57.0,
+    "returncode": 0
   },
   {
     "name": "solver_difficulty_case118_ieee",
@@ -167,7 +186,11 @@
     "network": "case118_ieee",
     "mode": "pf",
     "scenarios": 300,
-    "status": "pending"
+    "status": "done",
+    "started_at": "2026-08-14 10:34:20",
+    "finished_at": "2026-08-14 10:35:22",
+    "elapsed_seconds": 62.3,
+    "returncode": 0
   },
   {
     "name": "solver_difficulty_case300_ieee",
@@ -176,7 +199,11 @@
     "network": "case300_ieee",
     "mode": "pf",
     "scenarios": 300,
-    "status": "pending"
+    "status": "done",
+    "started_at": "2026-08-14 10:35:22",
+    "finished_at": "2026-08-14 10:37:03",
+    "elapsed_seconds": 100.7,
+    "returncode": 0
   },
   {
     "name": "solver_difficulty_case500_goc",
@@ -185,7 +212,11 @@
     "network": "case500_goc",
     "mode": "pf",
     "scenarios": 300,
-    "status": "pending"
+    "status": "done",
+    "started_at": "2026-08-14 10:37:03",
+    "finished_at": "2026-08-14 10:39:08",
+    "elapsed_seconds": 125.9,
+    "returncode": 0
   },
   {
     "name": "solver_difficulty_case2000_goc",
@@ -204,7 +235,11 @@
     "network": "case57_ieee",
     "mode": "pf",
     "scenarios": 500,
-    "status": "pending"
+    "status": "done",
+    "started_at": "2026-08-14 10:39:08",
+    "finished_at": "2026-08-14 10:40:07",
+    "elapsed_seconds": 58.2,
+    "returncode": 0
   },
   {
     "name": "loadability_case300_ieee",
@@ -213,7 +248,11 @@
     "network": "case300_ieee",
     "mode": "pf",
     "scenarios": 500,
-    "status": "pending"
+    "status": "done",
+    "started_at": "2026-08-14 10:40:07",
+    "finished_at": "2026-08-14 10:42:17",
+    "elapsed_seconds": 130.2,
+    "returncode": 0
   },
   {
     "name": "loadability_case2000_goc",
@@ -232,7 +271,11 @@
     "network": "case57_ieee",
     "mode": "opf",
     "scenarios": 500,
-    "status": "pending"
+    "status": "done",
+    "started_at": "2026-08-14 10:42:17",
+    "finished_at": "2026-08-14 10:43:19",
+    "elapsed_seconds": 61.6,
+    "returncode": 0
   },
   {
     "name": "cost_sweep_sigma1.0",
@@ -241,7 +284,11 @@
     "network": "case57_ieee",
     "mode": "opf",
     "scenarios": 500,
-    "status": "pending"
+    "status": "done",
+    "started_at": "2026-08-14 10:43:19",
+    "finished_at": "2026-08-14 10:44:19",
+    "elapsed_seconds": 60.4,
+    "returncode": 0
   },
   {
     "name": "cost_sweep_sigma2.5",
@@ -250,7 +297,11 @@
     "network": "case57_ieee",
     "mode": "opf",
     "scenarios": 500,
-    "status": "pending"
+    "status": "done",
+    "started_at": "2026-08-14 10:44:19",
+    "finished_at": "2026-08-14 10:45:22",
+    "elapsed_seconds": 63.2,
+    "returncode": 0
   },
   {
     "name": "crossgrid_case14_ieee",
@@ -259,7 +310,11 @@
     "network": "case14_ieee",
     "mode": "pf",
     "scenarios": 800,
-    "status": "pending"
+    "status": "done",
+    "started_at": "2026-08-14 10:45:22",
+    "finished_at": "2026-08-14 10:46:53",
+    "elapsed_seconds": 90.4,
+    "returncode": 0
   },
   {
     "name": "crossgrid_case24_ieee_rts",
@@ -268,7 +323,11 @@
     "network": "case24_ieee_rts",
     "mode": "pf",
     "scenarios": 800,
-    "status": "pending"
+    "status": "done",
+    "started_at": "2026-08-14 10:46:53",
+    "finished_at": "2026-08-14 10:48:22",
+    "elapsed_seconds": 89.1,
+    "returncode": 0
   },
   {
     "name": "crossgrid_case57_ieee",
@@ -277,7 +336,11 @@
     "network": "case57_ieee",
     "mode": "pf",
     "scenarios": 800,
-    "status": "pending"
+    "status": "done",
+    "started_at": "2026-08-14 10:48:22",
+    "finished_at": "2026-08-14 10:50:00",
+    "elapsed_seconds": 98.0,
+    "returncode": 0
   },
   {
     "name": "crossgrid_case118_ieee",
@@ -286,7 +349,11 @@
     "network": "case118_ieee",
     "mode": "pf",
     "scenarios": 800,
-    "status": "pending"
+    "status": "done",
+    "started_at": "2026-08-14 10:50:00",
+    "finished_at": "2026-08-14 10:51:54",
+    "elapsed_seconds": 113.9,
+    "returncode": 0
   },
   {
     "name": "crossgrid_case300_ieee",
@@ -295,7 +362,11 @@
     "network": "case300_ieee",
     "mode": "pf",
     "scenarios": 800,
-    "status": "pending"
+    "status": "done",
+    "started_at": "2026-08-14 10:51:54",
+    "finished_at": "2026-08-14 10:55:04",
+    "elapsed_seconds": 190.4,
+    "returncode": 0
   },
   {
     "name": "crossgrid_case500_goc",
@@ -304,7 +375,11 @@
     "network": "case500_goc",
     "mode": "pf",
     "scenarios": 800,
-    "status": "pending"
+    "status": "done",
+    "started_at": "2026-08-14 10:55:04",
+    "finished_at": "2026-08-14 10:58:57",
+    "elapsed_seconds": 232.4,
+    "returncode": 0
   },
   {
     "name": "crossgrid_case2000_goc",
