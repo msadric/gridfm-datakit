@@ -232,3 +232,116 @@ was. This space is moving fast, another pass would likely find more still.
   analysis, N-1 contingency analysis, and fast screening tools, not for pretraining a
   reusable model. A different technique category from everything else in this list:
   differentiable physics simulation, not learned representation transfer.
+
+## Four more, from a user-supplied Google Scholar search dump (pulled 2026-08-14)
+
+Cross-referenced a full "foundation model for power grid" search results page
+against what was already saved. Already had: the Joule paper, the LLM power
+systems paper, PowerPM, MxGPS, GENCO. Skipped a cluster of six papers that are
+all broad "LLMs applied to power systems" surveys with heavy overlap (Madani
+et al., Cui et al., Antonesi et al., Amjad et al., Senisetty and Kiran,
+Mohammadabadi et al.), noted here but not pulled individually. Of the rest,
+two could not be downloaded, `mdpi.com` and `nrel.gov` are both blocked from
+this environment, same pattern as the earlier Cell Press block. Four were
+pulled successfully.
+
+### A genuine naming collision, not a false alarm this time
+
+`docs/references/optimal_grid_ops_fm_arxiv_2409.02148.pdf` and one that could
+not be pulled both need care here.
+
+Earlier in this session, a Microsoft Research URL containing the slug
+`/gridfm/` turned out to actually describe GridSFM, a false alarm, no real
+naming collision. This one is real: "GridFM: A Physics-Informed Foundation
+Model for Multi-Task Energy Forecasting Using Real-Time NYISO Data" (Sayghe,
+Mousa, Batiyah, Husawi, Energies 2026, DOI 10.3390/en19020357) is from the
+Electrical Engineering Department at Yanbu Industrial College, Saudi Arabia,
+completely unrelated to the IBM and ETH Zurich GridFM. Same exact project
+name, different institution, different problem: multi-task forecasting of
+load demand, locational marginal prices, carbon emissions, and renewable
+generation for the New York ISO, using a physics-informed module that embeds
+power balance equations and zonal topology via graph neural networks. Not
+about power flow or OPF solving. Not pulled, `mdpi.com` returned an HTML page
+instead of the PDF and is blocked from this environment, same as the earlier
+Cell Press block for the Joule paper. Anyone searching "GridFM" will find
+both projects. Worth remembering this distinction if the name comes up again.
+
+### The direct lineage paper
+
+`docs/references/optimal_grid_ops_fm_arxiv_2409.02148.pdf`: "Optimal Power
+Grid Operations with Foundation Models" (Alban Puech, Jonas Weiss, Thomas
+Brunschwiler, Hendrik F. Hamann, arXiv:2409.02148, September 2024). Same
+author team as the Joule perspective paper and `gridfm-datakit`, IBM Research
+Europe and IBM Research T.J. Watson. Predates the Joule paper by about three
+months. Reads as the seed position paper: argues that AI foundation models
+and graph neural networks can exploit sparse grid data across downstream
+tasks, and states plainly that "building a self-supervised model learning the
+power flow dynamics is a critical first step towards developing an FM for
+the power grid", exactly the approach Mazzonelli's thesis then executes.
+Frames the problem through four transmission operator tasks: grid operation,
+contingency analysis, economic dispatch, and capacity expansion, all made
+harder by the energy transition's added variability and by power flow
+solvers scaling quadratically with grid size.
+
+### A physics-based approach outside the graph neural network line of work
+
+`docs/references/synchro_waveform_fm_arxiv_2403.06942.pdf`: "Grid Monitoring
+with Synchro-Waveform and AI Foundation Model Technologies" (Tong, Wang,
+Zhao). Proposes a foundation model built directly on high-resolution
+synchro-waveform measurements rather than on graph-structured power flow
+data, aimed at next-generation grid monitoring and control as grids become
+dominated by inverter-based resources. Uses the Wiener-Kallianpur-Rosenblatt
+innovation model for time series, trained to capture both the physical laws
+of power flow and the sinusoidal characteristics of grid measurements.
+Targets anomaly detection and over-current protection. A different
+architectural family from the GNN-based line of work (GridFM, GridSFM,
+LUMINA, CANOS, MxGPS): measurement time series, not grid topology graphs.
+
+### Dynamics and stability, not steady-state
+
+`docs/references/lass_ode_power_arxiv_2604.14991.pdf`: "Predicting
+Power-System Dynamic Trajectories with Foundation Models" (LASS-ODE-Power;
+Li, Mai, Xiao, Blasch, Weng). Every other model in this reference set,
+GridFM, GridSFM, LUMINA, CANOS, MxGPS, targets steady-state power flow or
+OPF. This one targets time-domain dynamic simulation and trajectory
+prediction instead: frequency stability, voltage stability, electromagnetic
+transient simulation. Pretrained on over 40 GB of dynamic trajectories,
+supporting zero-shot prediction across electromechanical and inverter-driven
+dynamic regimes. A genuinely different sub-problem within power systems, not
+a competitor to the steady-state line of work.
+
+### A different paradigm: federated learning
+
+`docs/references/federated_fm_grids_arxiv_2509.16496.pdf`: "Synergies between
+Federated Foundation Models and Smart Power Grids" (Hosseinalipour, Li,
+Inaolaji, Malandra, Herrera, Mastronarde). Examines multi-modal, multi-task
+foundation models combined with federated learning (M3T FedFMs), so that
+grid data across many distributed, privacy-sensitive sources, utilities,
+distributed energy resource operators, can jointly train a shared model
+without centralizing raw data. Bidirectional framing: how such models could
+improve load forecasting and fault detection, and separately how the grid's
+own structural and regulatory constraints shape what a federated foundation
+model can look like. A different paradigm from all of the above: not about a
+single centrally-trained model, but about how to train one without
+centralizing the data at all.
+
+### Not pulled
+
+- The Yanbu "GridFM" paper (Energies 2026, see above). `mdpi.com` is blocked
+  from this environment.
+- "eGridGPT: Trustworthy AI in the Control Room" (Choi, Jain, Emami, Wadsack,
+  Ding, Sun, NREL technical report NREL/TP-5D00-87440, May 2024). NREL's own
+  first research effort applying an LLM inside the power grid control room,
+  combining an LLM with physics-based digital twin simulation to support
+  operator decisions. Both `nrel.gov` and `docs.nrel.gov` are blocked from
+  this environment. Worth reading directly if the topic of LLM-based control
+  room assistants comes up again, since this is a real, named, deployed-style
+  system from a national laboratory, not just a proposal.
+- Six broad "LLMs applied to power systems" survey papers, noted above,
+  skipped as a cluster due to heavy topical overlap with each other: Madani
+  et al. (Energy Reports 2025, thirty LLM applications across eight
+  categories), Cui et al. (CSEE 2026, mentions China's "Guangming Power"
+  trillion-parameter power industry model and NREL's eGridGPT), Antonesi et
+  al. (2025, Agentic Digital Twins), Amjad et al. (IEEE Access 2025),
+  Senisetty and Kiran (2026), Mohammadabadi et al. (2024, generative AI for
+  distributed smart grid communication).
