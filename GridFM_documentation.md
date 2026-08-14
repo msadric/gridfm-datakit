@@ -33,6 +33,68 @@ Files saved:
 - `docs/references/joule_perspective_S2542-4351(24)00470-7.pdf` (added manually
   by the user on 2026-08-13, since automated fetch was blocked)
 
+## Background reading: the origin thesis (2026-08-14)
+
+Repository: `gridfm-datakit`
+
+Found and saved Matteo Mazzonelli's ETH Zurich master's thesis, "Foundation
+Model for the Power Grid" (2025, DOI 10.3929/ethz-b-000733077), saved to
+`docs/references/mazzonelli_ethz_masterthesis_foundation_model_power_grid.pdf`.
+Downloaded through the DSpace REST content endpoint
+(`/server/api/core/bitstreams/{uuid}/content`), since the normal landing
+page and the friendly bitstream URL both failed (the landing page
+returned HTTP 500, the friendly URL served the Angular app shell instead
+of the file).
+
+This is the origin document for the whole GridFM project. Same person,
+same supervisors (Dr. Thomas Brunschwiler and Dr. Jonas Weiss from IBM
+Research, both co-authors on `gridfm-datakit` and `gridfm-graphkit`
+today). Reading it explains several things found by exploring the code
+directly, without needing to guess:
+
+- The thesis proposes two model variants. GridFMv0.1, a lightweight
+  TransformerConv-based GNN with linear time scaling, is the conceptual
+  ancestor of `gridfm-graphkit`'s `GNS_heterogeneous`. GridFMv0.2, a hybrid
+  GPSConv model combining local message passing with global attention, is
+  the conceptual ancestor of `GRIT`.
+- The thesis's data generation pipeline is the direct ancestor of
+  `gridfm-datakit`, but used a different stack: PandaPower (pure Python,
+  Newton-Raphson), not the PowerModels.jl and Julia stack `gridfm-datakit`
+  uses now. The thesis names its two dataset variants "PowerGraph (PG)"
+  and "PowerGraphTP (PG-TP)". This is where `gridfm-datakit`'s
+  `powergraph` load generator name comes from. The thesis perturbs
+  topology by removing up to 10 random elements. `gridfm-datakit`
+  generalizes this into a configurable `k` and adds exhaustive `n_minus_k`
+  as a second option.
+- The thesis masks each feature independently with 50 percent probability
+  during self-supervised pretraining. This is the same mechanism as
+  `gridfm-graphkit`'s `data.mask_type: rnd` and `data.mask_ratio` config
+  options (`AddRandomHeteroMask`).
+- The thesis's physics-informed loss is based on the AC power balance
+  equations (PBE). This is the same idea behind `gridfm-graphkit`'s
+  `LayeredWeightedPhysics` and `PBE` loss functions, both used in the
+  experiments run in this session.
+- Key empirical result: a model trained on topology-perturbed data (PG-TP)
+  generalized far better than one trained on load-only perturbations (PG),
+  even on the PG-only test set (0.389 vs 0.51 MW residual), and much more
+  so on the harder PG-TP test set (0.70 vs 6.02 MW). This is the empirical
+  justification for why `gridfm-datakit`'s topology perturbation exists.
+- Key empirical result: the attention-based GridFMv0.2 consistently beat
+  the GNN-based GridFMv0.1 and classic baselines (GCN, GAT, GraphSAGE,
+  GINE) on power flow prediction, especially on larger grids, but at real
+  compute cost. This matches what was measured directly in this session:
+  GRIT took about 8.5 times longer per epoch than GNS on the same 14 bus
+  grid.
+- Key empirical result: multi-grid pretraining was essential for zero-shot
+  transfer to an unseen grid. A model pretrained on six grids at once
+  generalized to an unseen case300 grid far better (73.55 MW residual)
+  than any single-grid-pretrained model (205 to 2127 MW), though still far
+  from a true AC solver (0.00026 MW).
+- The thesis explicitly names state estimation and contingency analysis as
+  future work, not yet built at the time (April 2025). Both now exist:
+  `gridfm-graphkit`'s `StateEstimation` task and `gridfm-datakit`'s
+  `n_minus_k` contingency generator.
+
 ### GENCO (IBM Research)
 
 GENCO, short for Geometric Neural Corrective Solver, is an open source neural
