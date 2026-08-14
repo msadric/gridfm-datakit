@@ -223,6 +223,98 @@ self-supervised pretraining and zero-shot evaluation setup, with a much
 larger dataset and longer training budget, rather than training the
 supervised `PowerFlow` task directly.
 
+## The wider landscape: GridFM and GridSFM are not the only two (2026-08-14)
+
+Repository: `gridfm-datakit` (all papers saved under `docs/references/`, full
+detail in `docs/references/web_sources_summary.md`)
+
+Started from a question: is it just GridFM (IBM, ETH Zurich, Imperial College,
+Hydro-Quebec, under LF Energy) and GridSFM (Microsoft)? No. Two search passes
+found ten more related papers. A further pass would likely find more still,
+this space is moving fast.
+
+Checked one possible naming collision and ruled it out: a Microsoft Research
+URL contains the slug `/gridfm/`, but the actual project described there is
+GridSFM, not a separate Microsoft project also called GridFM.
+
+### Direct siblings: LUMINA (Argonne National Laboratory)
+
+Two companion papers, `lumina_methods_arxiv_2603.04300.pdf` and
+`lumina_bench_arxiv_2605.02133.pdf`. Same problem as GridFM, AC-OPF surrogate
+learning with cross-topology generalization, different named project.
+Kibaek Kim (Argonne) is a co-author on both LUMINA papers, on the
+`gridfm-datakit-v1` paper read earlier in this session, and (see below) on
+GridMind. The methods paper, published at ICLR 2026, derives three design
+principles for foundation models whose predictions must satisfy hard physical
+constraints: balance physics-invariant learning against system-specific
+constraints, balance accuracy against feasibility, and stay reliable in
+tight-margin operating regimes. The benchmark paper, LUMINA-Bench, is an
+open-sourced suite for multi-topology pretraining, transfer, and adaptation.
+
+### The precursor: CANOS (Google DeepMind)
+
+`canos_arxiv_2403.17660.pdf`. Not self-branded a foundation model, but the
+work both GridFM and the wider field point back to. A GNN-based AC-OPF solver,
+within 1 percent of true cost in 33 to 65 milliseconds, scales to 10000 buses,
+robust to N-1 topology perturbations. Trained on one fixed topology, not
+designed to generalize across grid configurations, which is exactly the gap
+GridFM, GridSFM, LUMINA, and MxGPS (below) are trying to close. Mazzonelli's
+thesis cites this directly as the prior work GridFM is positioned against.
+
+### A cleaner generalization result worth reading against the reproduction attempt above: MxGPS
+
+`mxgps_arxiv_2607.13763.pdf`. Targets the same problem as the PG vs PG-TP
+reproduction attempt recorded above, generalization to unseen grid topologies,
+and reports a much better result. Argues that models with low training error
+often fail badly on unseen topologies because they encode structure specific
+to the training topologies. Fixes this not with more scale but with multi-task
+joint training on two tasks at once, static state estimation and AC power
+flow. On four unseen grid configurations: zero boundary violations and only
+39 percent performance degradation under topology shift, versus 190 to 1400
+percent degradation for competing models, using only 1.6 million parameters,
+far smaller than typical foundation model scale.
+
+### A third Argonne project, different paradigm entirely: GridMind
+
+`gridmind_arxiv_2509.02494.pdf`. Same two authors as LUMINA, Hongwei Jin and
+Kibaek Kim. Not a trained surrogate model at all. A multi-agent framework that
+combines LLMs with real engineering solvers through function calls, so the
+actual AC-OPF and N-1 contingency analysis stays numerically accurate while a
+user interacts in natural language. Finds smaller LLMs can match larger ones
+on analytical accuracy while using less compute. Positions agentic AI, an LLM
+that calls real solvers, as a distinct alternative to training a neural
+surrogate at all.
+
+### A complementary, not competing, project: the Hydro-Quebec weather foundation model
+
+`weather_fm_power_grid_arxiv_2509.25268.pdf`. Not a power-flow model. Fine-tunes
+a 1.5 billion parameter weather foundation model on Hydro-Quebec's own
+infrastructure data to forecast surface temperature, precipitation, wind
+speed, wind turbine icing risk, and rime ice buildup on power lines, all
+relevant to grid operations. Francois Miralles, a Hydro-Quebec author on this
+paper, also appears on the Joule perspective paper read earlier in this
+session. Complementary to GridFM: weather forecasting in service of grid
+operations, not a power-flow or OPF surrogate.
+
+### More tangential findings, kept distinct rather than conflated
+
+- `tokamind_power_grid_arxiv_2605.11033.pdf`: TokaMind, a transformer trained
+  on nuclear fusion plasma data, tested for transfer to power grid PMU
+  (synchrophasor) event classification. Different problem, PMU anomaly
+  classification, not power-flow or OPF solving.
+- `llm_power_systems_arxiv_2312.07044.pdf` and `powerpm_arxiv_2408.04057.pdf`:
+  two papers about learning from electricity time series (load and
+  consumption data), not about solving power flow or OPF. Easy to confuse
+  with the AC-OPF line of work because of similar naming and branding.
+- `differentiable_power_flow_arxiv_2603.28203.pdf`: not a foundation model,
+  a differentiable AC power flow simulation method (DPF) for GPU-accelerated
+  screening and contingency analysis. Included for completeness since it
+  surfaced in the same search.
+- A paper titled "PowerGPT: Foundation Model for Power Systems" appears on
+  OpenReview (id `ntSP0bzr8Y`) but its page is behind a bot-verification wall.
+  Not pulled, its arXiv identifier could not be confirmed, and it may or may
+  not be the same work as PowerPM.
+
 ## Local environment setup (2026-08-13)
 
 Repository: `gridfm-datakit`
@@ -670,3 +762,7 @@ Record completed work in this format:
 | `gridfm-datakit` | `4ceab55` | Add and summarize Mazzonelli's ETH Zurich master thesis |
 | `gridfm-datakit` | `8a6f6a0` | Add PG/PG-TP case300 configs to reproduce Mazzonelli's thesis finding |
 | `gridfm-graphkit` | `9df1f4e` | Add PG vs PG-TP reproduction configs (attempt at thesis Table 5.1) |
+| `gridfm-datakit` | `085989c` | Document the PG vs PG-TP thesis reproduction attempt |
+| `gridfm-datakit` | `c9b860d` | Add graph foundation model transferability survey to references |
+| `gridfm-datakit` | `a636a8b` | Add related grid/power-system foundation model papers to references |
+| `gridfm-datakit` | `8d7609c` | Add five more grid/power-system foundation model papers to references |
