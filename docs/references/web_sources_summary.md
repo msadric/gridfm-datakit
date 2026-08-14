@@ -73,3 +73,23 @@ URL: https://www.cell.com/joule/fulltext/S2542-4351(24)00470-7
 This page returned HTTP 403 Forbidden on fetch. Cell Press blocks automated access and
 the full text is likely behind a subscription. Not pulled. Follow the link directly in
 a browser to read it.
+
+## Graph foundation model transferability survey (pulled 2026-08-14)
+
+URL: https://arxiv.org/abs/2503.09363
+Saved: docs/references/transferability_survey_arxiv_2503.09363.pdf
+
+"Towards Graph Foundation Models: A Transferability Perspective" (Yuxiang Wang, Wenqi
+Fan, Suhang Wang, Yao Ma, arXiv:2503.09363, March 2025). A survey, not a new model. It
+proposes the first taxonomy that organizes existing Graph Foundation Models (GFMs)
+specifically through the lens of transferability, meaning how well a model trained on
+one graph domain or task generalizes to another. Graphs vary far more than text or
+images in structure, features, and data distribution, which makes transfer harder.
+
+The survey splits GFMs into domain-specific and general-purpose approaches, and maps
+out open research directions for improving cross-domain and cross-task generalization.
+
+Relevant here as general background, not GridFM-specific. It is the broader graph-ML
+framing of the same generalization problem Mazzonelli's thesis tests empirically for
+power grids: zero-shot transfer of a pretrained model to an unseen grid topology (see
+`GridFM_documentation.md`, section "Background reading: the origin thesis").
