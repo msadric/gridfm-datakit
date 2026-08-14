@@ -155,6 +155,74 @@ This paper is the conceptual basis for the GridFM project as a whole,
 including `gridfm-datakit` and `gridfm-graphkit`, and predates GENCO and the
 datakit paper.
 
+## Reproduction attempt: thesis Table 5.1 (2026-08-14)
+
+Repositories: `gridfm-datakit`, `gridfm-graphkit`
+
+Attempted to reproduce the thesis's cleanest empirical result, the PG vs
+PG-TP generalization comparison (Table 5.1). Full setup:
+
+- Generated two datasets with `gridfm-datakit` on `case300_ieee`, matching
+  the thesis's grid choice: `repro_pg_case300.yaml` (load perturbation
+  only, no topology changes, the thesis's "PowerGraph" or PG) and
+  `repro_pgtp_case300.yaml` (load plus topology perturbation, `k=10` to
+  match the thesis's "up to 10 elements removed", the thesis's
+  "PowerGraphTP" or PG-TP). Both validated clean.
+- Trained `gridfm-graphkit`'s `GNS_heterogeneous` on each, `PowerFlow`
+  task, 30 epochs, using `examples/config/repro_pg_case300.yaml` and
+  `repro_pgtp_case300.yaml`.
+- Cross-evaluated each trained model on the other dataset using
+  `gridfm_graphkit evaluate` with `--model_path` and `--normalizer_stats`
+  pointing at the other run's saved checkpoint and normalizer, so the
+  cross-evaluation used the training-time normalization, not a freshly
+  refit one. This distinction matters and is easy to get wrong, see
+  `docs/CAPABILITIES.md` section 12 in `gridfm-graphkit` for why.
+
+Result, in the same units and layout as the thesis's Table 5.1 (mean
+active power residual, MW):
+
+| Model (training data) | Test on PG | Test on PG-TP |
+| --- | --- | --- |
+| Trained on PG | 10.59 (own test set) | 11.83 |
+| Trained on PG-TP | 11.52 | 14.10 (own test set) |
+
+Thesis's original result, for comparison:
+
+| Model (training data) | Test on PG | Test on PG-TP |
+| --- | --- | --- |
+| Trained on PG | 0.51 | 6.02 |
+| Trained on PG-TP | 0.389 | 0.70 |
+
+This does not reproduce the thesis's finding. In the thesis, PG-TP
+training generalizes better on both test sets. In this attempt, the
+PG-trained model did as well or better on both test sets than the
+PG-TP-trained model, the opposite pattern.
+
+This is recorded as a genuine non-reproduction, not swept under the rug,
+because the setups are not equivalent, so it should not be read as
+evidence against the thesis's finding either. Differences that likely
+explain the gap:
+
+- The thesis's result comes from self-supervised pretraining, with 50
+  percent random feature masking, evaluated zero-shot afterward using
+  task-specific masking. This attempt trained `gridfm-graphkit`'s
+  `PowerFlow` task directly, with deterministic task-specific masking
+  throughout, no separate self-supervised pretraining phase. This is a
+  different training signal, not just a different codebase.
+- Far less training: 30 epochs here, versus the thesis's convergence
+  plots still showing meaningful change at 125 to 400 epochs.
+- Much less data: thousands of scenarios here (2998 for PG, 12531 for
+  PG-TP), versus hundreds of thousands in the thesis.
+- Different model internals (`GNS_heterogeneous` versus the thesis's
+  original TransformerConv-based GridFMv0.1) and a different solver stack
+  underneath (`gridfm-datakit`'s PowerModels and Julia versus the thesis's
+  PandaPower).
+
+A cleaner reproduction, if wanted later, would need to replicate the
+self-supervised pretraining and zero-shot evaluation setup, with a much
+larger dataset and longer training budget, rather than training the
+supervised `PowerFlow` task directly.
+
 ## Local environment setup (2026-08-13)
 
 Repository: `gridfm-datakit`
@@ -598,3 +666,7 @@ Record completed work in this format:
 | `GridSFM` | `acbe02a` | Set up uv for model/, pinned to CUDA 12.8 torch build |
 | `GridSFM` | `c1d2cde` | Add full capability reference (docs/CAPABILITIES.md) |
 | `GridSFM` | `58adfe1` | Add small benchmarking script: cache warm-up and latency-vs-size scaling |
+| `gridfm-datakit` | `168a444` | Document overnight batch results, gridfm-graphkit and GridSFM findings |
+| `gridfm-datakit` | `4ceab55` | Add and summarize Mazzonelli's ETH Zurich master thesis |
+| `gridfm-datakit` | `8a6f6a0` | Add PG/PG-TP case300 configs to reproduce Mazzonelli's thesis finding |
+| `gridfm-graphkit` | `9df1f4e` | Add PG vs PG-TP reproduction configs (attempt at thesis Table 5.1) |
