@@ -165,3 +165,70 @@ electricity time series framing, but the OpenReview page is behind a bot-verific
 wall that could not be passed automatically, and its arXiv identifier could not be
 confirmed. Not pulled, to avoid guessing the wrong paper. Follow the OpenReview link
 directly in a browser to check.
+
+## Five more grid foundation model papers (pulled 2026-08-14)
+
+Found by asking, after the first pass above, whether anything was still missing. It
+was. This space is moving fast, another pass would likely find more still.
+
+- `docs/references/weather_fm_power_grid_arxiv_2509.25268.pdf`: "A Weather Foundation
+  Model for the Power Grid" (Bodnar, Rousseau-Rizzi, Shankar, Merleau, Flampouris,
+  Candille, Antic, Miralles, Gupta). Not a power-flow model at all. Fine-tunes a
+  1.5 billion parameter weather foundation model (the Generative Forecasting
+  Transformer) on Hydro-Quebec's own infrastructure data to forecast five variables
+  relevant to grid operations: surface temperature, precipitation, hub height wind
+  speed, wind turbine icing risk, and rime ice buildup on power lines. Cuts
+  temperature MAE by 15 percent, precipitation MAE by 35 percent, wind speed MAE by
+  15 percent, and reaches 0.72 average precision for day ahead rime ice detection,
+  a hazard conventional forecasting cannot predict well. Francois Miralles, a
+  Hydro-Quebec author, also appears on the Joule perspective paper read earlier in
+  this session. Complementary to GridFM, not a competitor: this is weather
+  forecasting in service of grid operations, not a power-flow or OPF surrogate.
+
+- `docs/references/mxgps_arxiv_2607.13763.pdf`: "MxGPS: Multiplex Graph Transformers
+  for a Power Grid Foundation Model" (Papaioannou, Tsantilas, Giannakakos,
+  Michalakopoulos, Pelekis, Marinakis, Aryandoust, Monti, Bessa, Vergara, Cremer,
+  Sarmas). A genuine alternative approach to the exact generalization problem GridFM
+  and LUMINA both target. Argues that models with low training error often fail badly
+  on unseen grid topologies because they encode structure specific to the training
+  topologies. Trains multiplex graph transformers jointly on two tasks, static state
+  estimation and AC power flow, and shows this joint training discourages
+  topology-specific overfitting. On four unseen grid configurations: zero boundary
+  violations and only 39 percent performance degradation under topology shift, versus
+  190 to 1400 percent degradation for competing models. Uses only 1.6 million
+  parameters, far smaller than typical foundation model scale. Worth reading against
+  the PG vs PG-TP reproduction attempt recorded in `GridFM_documentation.md`, since it
+  reports a much cleaner generalization result on the same class of problem.
+
+- `docs/references/tokamind_power_grid_arxiv_2605.11033.pdf`: "TokaMind for Power
+  Grid: Cross-Domain Transfer from Fusion Plasma" (Wu, Lee, Chen). An unusual
+  transfer-learning angle: TokaMind is a multi-modal transformer originally trained on
+  tokamak fusion plasma data (MAST), and this paper tests whether its learned
+  representations transfer to power grid PMU (synchrophasor) data for event
+  classification, alongside two industrial degradation datasets as other transfer
+  targets. Power grid PMU data was the best match among the domains tested. Reaches
+  F1 = 0.837 on a severe-event classification benchmark, and finds that classification
+  difficulty is driven by provider-level grid topology, not by model capacity. First
+  cross-domain validation of TokaMind outside fusion. Different problem again: PMU
+  event/anomaly classification, not power-flow or OPF solving.
+
+- `docs/references/gridmind_arxiv_2509.02494.pdf`: "GridMind: LLMs-Powered Agents for
+  Power System Analysis and Operations" (Hongwei Jin, Kibaek Kim, Jonghwan Kwon). A
+  third Argonne National Laboratory project in this space, same two authors as
+  LUMINA (Jin, Kim). Different paradigm again: not a trained surrogate model, but a
+  multi-agent framework that combines LLMs with real engineering solvers, using
+  function calls to keep the actual AC-OPF and N-1 contingency analysis numerically
+  accurate while letting a user interact in natural language. Tested on IEEE cases.
+  Finds smaller LLMs can match larger ones on analytical accuracy while using less
+  compute. Positions agentic AI, meaning an LLM that calls real solvers rather than
+  approximating them, as a distinct alternative to training a neural surrogate at all.
+
+- `docs/references/differentiable_power_flow_arxiv_2603.28203.pdf`: "Differentiable
+  Power-Flow Optimization" (Oz, Hoerter, Phipps, Debus, Streit, Goetz). Not a
+  foundation model, included for completeness since it surfaced in the same search.
+  Reformulates AC power flow as a differentiable simulation (DPF) so gradients flow
+  end to end from physical power mismatches back to the simulation parameters, built
+  on PyTorch for GPU acceleration and batching. Positions itself for time series
+  analysis, N-1 contingency analysis, and fast screening tools, not for pretraining a
+  reusable model. A different technique category from everything else in this list:
+  differentiable physics simulation, not learned representation transfer.
