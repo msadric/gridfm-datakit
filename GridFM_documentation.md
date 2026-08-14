@@ -315,6 +315,63 @@ operations, not a power-flow or OPF surrogate.
   Not pulled, its arXiv identifier could not be confirmed, and it may or may
   not be the same work as PowerPM.
 
+### A third pass, from a user-supplied search dump
+
+The user pasted a full Google Scholar "foundation model for power grid"
+results page. Cross-referencing it against everything above found five
+already saved (Joule paper, the LLM power systems paper, PowerPM, MxGPS,
+GENCO), six overlapping "LLMs applied broadly to power systems" survey
+papers that were noted but not pulled individually (heavy topical overlap
+with each other: Madani et al., Cui et al., Antonesi et al., Amjad et al.,
+Senisetty and Kiran, Mohammadabadi et al.), and six genuinely new items, of
+which four could be downloaded and two could not.
+
+**A second, real naming collision.** Earlier, a Microsoft Research URL
+containing the slug `/gridfm/` turned out to be a false alarm, the actual
+project described was GridSFM. This one is real: "GridFM: A Physics-Informed
+Foundation Model for Multi-Task Energy Forecasting Using Real-Time NYISO
+Data" (Sayghe, Mousa, Batiyah, Husawi, Energies 2026) is from the Electrical
+Engineering Department at Yanbu Industrial College, Saudi Arabia, completely
+unrelated to the IBM and ETH Zurich GridFM. Same exact project name,
+different institution, different problem: forecasting load, locational
+marginal prices, carbon emissions, and renewable generation for the New York
+ISO, not power flow or OPF. Could not be pulled, `mdpi.com` is blocked from
+this environment, same pattern as the earlier Cell Press block on the Joule
+paper.
+
+**The direct lineage paper**, saved as
+`docs/references/optimal_grid_ops_fm_arxiv_2409.02148.pdf`: "Optimal Power
+Grid Operations with Foundation Models" (Puech, Weiss, Brunschwiler, Hamann,
+September 2024). Same IBM Research author team as the Joule paper and
+`gridfm-datakit`, written about three months before the Joule paper. Reads as
+the seed position paper for the whole project: states plainly that "building
+a self-supervised model learning the power flow dynamics is a critical first
+step towards developing an FM for the power grid", which is exactly the
+approach Mazzonelli's thesis then carries out.
+
+**Three more saved papers, each a genuinely different sub-problem or
+paradigm from the GNN-on-grid-topology line of work** (GridFM, GridSFM,
+LUMINA, CANOS, MxGPS):
+
+- `docs/references/synchro_waveform_fm_arxiv_2403.06942.pdf`: builds a
+  foundation model on raw synchro-waveform measurement time series instead
+  of grid topology graphs, for anomaly detection and over-current
+  protection as grids become dominated by inverter-based resources.
+- `docs/references/lass_ode_power_arxiv_2604.14991.pdf`: LASS-ODE-Power,
+  targets time-domain dynamic trajectory prediction (frequency stability,
+  voltage stability, electromagnetic transients), not steady-state power
+  flow or OPF at all.
+- `docs/references/federated_fm_grids_arxiv_2509.16496.pdf`: examines
+  training a shared foundation model across many distributed, privacy
+  sensitive grid data sources without centralizing the data, a different
+  training paradigm from every other paper in this collection.
+
+**Not pulled**: the Yanbu "GridFM" paper (above) and "eGridGPT: Trustworthy
+AI in the Control Room" (Choi, Jain, Emami, Wadsack, Ding, Sun, NREL
+technical report, May 2024, the first LLM deployed as a control room
+assistant, combined with physics-based digital twin simulation). Both
+`mdpi.com` and `nrel.gov` are blocked from this environment.
+
 ## Local environment setup (2026-08-13)
 
 Repository: `gridfm-datakit`
@@ -766,3 +823,5 @@ Record completed work in this format:
 | `gridfm-datakit` | `c9b860d` | Add graph foundation model transferability survey to references |
 | `gridfm-datakit` | `a636a8b` | Add related grid/power-system foundation model papers to references |
 | `gridfm-datakit` | `8d7609c` | Add five more grid/power-system foundation model papers to references |
+| `gridfm-datakit` | `75ca01a` | Document the wider grid foundation model landscape survey |
+| `gridfm-datakit` | `1f5bc7c` | Add four more grid FM papers from a user-supplied search dump |
