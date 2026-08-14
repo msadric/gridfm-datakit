@@ -93,3 +93,75 @@ Relevant here as general background, not GridFM-specific. It is the broader grap
 framing of the same generalization problem Mazzonelli's thesis tests empirically for
 power grids: zero-shot transfer of a pretrained model to an unseen grid topology (see
 `GridFM_documentation.md`, section "Background reading: the origin thesis").
+
+## Other grid/power-system foundation model projects (pulled 2026-08-14)
+
+Found while checking whether GridFM (IBM/ETH/Hydro-Quebec, LF Energy) and GridSFM
+(Microsoft) are the only two grid foundation model efforts. They are not. Five more
+papers pulled and saved:
+
+### LUMINA (two companion papers, Argonne National Laboratory)
+
+The closest direct sibling to GridFM. Authors overlap directly: Kibaek Kim (Argonne)
+is a co-author on both LUMINA papers and on the `gridfm-datakit-v1` paper read earlier
+in this session. Also involves Emory University and Sogang University.
+
+- `docs/references/lumina_methods_arxiv_2603.04300.pdf`: "LUMINA: Foundation Models
+  for Topology Transferable ACOPF" (Li, Memon, Jin, Fenu, Song, Sharma, Gasana, H.
+  Kim, Zhao, K. Kim, published as an ICLR 2026 conference paper). Asks what design
+  principles a foundation model needs when its predictions must satisfy hard physical
+  constraints, using AC-OPF as the test case. Through controlled experiments across
+  architectures, training objectives, and system diversity, the paper derives three
+  design trade-offs: learning physics-invariant representations while still respecting
+  system-specific constraints, optimizing accuracy while keeping solutions feasible,
+  and staying reliable in high-impact, tight-margin operating regimes. Releases the
+  LUMINA framework, meaning data processing and training pipelines, for reproducible
+  research on this kind of model.
+- `docs/references/lumina_bench_arxiv_2605.02133.pdf`: "LUMINA: A Grid Foundation
+  Model for Benchmarking AC Optimal Power Flow Surrogate Learning" (Jin, Song, Memon,
+  Li, Fenu, H. Kim, Zhao, K. Kim). The companion benchmark paper. Introduces
+  LUMINA-Bench, a benchmark suite covering multi-topology pretraining, transfer, and
+  adaptation for AC-OPF surrogates, evaluating both uniform and diverse architectures
+  across single and multi-network scenarios, on both predictive accuracy and physical
+  constraint adherence. Open-sourced the data processing, training, and evaluation
+  tools.
+
+### CANOS (Google DeepMind)
+
+`docs/references/canos_arxiv_2403.17660.pdf`: "CANOS: A Fast and Scalable Neural
+AC-OPF Solver Robust To N-1 Perturbations" (Piloto, Liguori, Madjiheurem, Zgubic,
+Lovett, Tomlinson, Elster, Apps, Witherspoon). Not self-branded a foundation model, but
+the key precursor both GridFM and the wider field point back to. A GNN-based AC-OPF
+solver that predicts within 1 percent of the true cost in 33 to 65 milliseconds,
+scales to grids with up to 10000 buses, and is explicitly robust to N-1 topology
+perturbations used in security-constrained analysis. Mazzonelli's thesis cites this
+directly as the prior work GridFM is positioned against, since CANOS is trained on a
+specific topology and not designed to generalize across grid configurations.
+
+### Two papers in a different problem category (electricity time series, not AC-OPF)
+
+Found while searching, worth keeping distinct rather than conflating with the AC-OPF
+foundation models above. Both are about learning from electricity time series data
+(load, consumption), not about solving power flow or OPF.
+
+- `docs/references/llm_power_systems_arxiv_2312.07044.pdf`: "Large Foundation Models
+  for Power Systems" (Huang, Li, Liu, Wang, Chen). Tests whether general-purpose large
+  language models like GPT-4 can help with power system tasks (optimal power flow,
+  electric vehicle scheduling, knowledge retrieval from engineering reports, situation
+  awareness) without any task-specific training. Different approach entirely from
+  GridFM/GridSFM/LUMINA, which train dedicated graph models on grid data. This one
+  tests off-the-shelf general LLMs on format-free queries.
+- `docs/references/powerpm_arxiv_2408.04057.pdf`: "PowerPM: Foundation Model for Power
+  Systems" (Tu, Zhang, Zhang, Fu, Zhang, Yang). A foundation model for electricity time
+  series specifically, with temporal and hierarchical encoders, pretrained with masked
+  time series modeling plus contrastive learning. Evaluated on demand-side management,
+  grid stability, and consumer behavior tasks. Not about power flow or OPF.
+
+### Not pulled
+
+A paper titled "PowerGPT: Foundation Model for Power Systems" appears on OpenReview
+(id `ntSP0bzr8Y`), possibly close to or overlapping with PowerPM given similar
+electricity time series framing, but the OpenReview page is behind a bot-verification
+wall that could not be passed automatically, and its arXiv identifier could not be
+confirmed. Not pulled, to avoid guessing the wrong paper. Follow the OpenReview link
+directly in a browser to check.
