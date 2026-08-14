@@ -38,8 +38,8 @@ def main() -> None:
     print(f"Starting overnight batch: {len(manifest)} datasets")
 
     for i, entry in enumerate(manifest):
-        if entry.get("status") == "done":
-            print(f"[{i + 1}/{len(manifest)}] {entry['name']}: already done, skipping")
+        if entry.get("status") in ("done", "skipped"):
+            print(f"[{i + 1}/{len(manifest)}] {entry['name']}: {entry['status']}, skipping")
             continue
 
         name = entry["name"]
@@ -63,6 +63,7 @@ def main() -> None:
                     str(config_path),
                 ],
                 cwd=str(REPO_ROOT),
+                start_new_session=True,
                 stdout=log_file,
                 stderr=subprocess.STDOUT,
             )

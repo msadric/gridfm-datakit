@@ -6,7 +6,11 @@
     "network": "case14_ieee",
     "mode": "pf",
     "scenarios": 3000,
-    "status": "pending"
+    "status": "done",
+    "started_at": "2026-08-14 00:46:58",
+    "finished_at": "2026-08-14 00:50:47",
+    "elapsed_seconds": 229.5,
+    "returncode": 0
   },
   {
     "name": "pf_medium_case118",
@@ -15,7 +19,11 @@
     "network": "case118_ieee",
     "mode": "pf",
     "scenarios": 2000,
-    "status": "pending"
+    "status": "done",
+    "started_at": "2026-08-14 00:50:47",
+    "finished_at": "2026-08-14 00:54:25",
+    "elapsed_seconds": 217.1,
+    "returncode": 0
   },
   {
     "name": "pf_large_case2000",
@@ -24,7 +32,11 @@
     "network": "case2000_goc",
     "mode": "pf",
     "scenarios": 1000,
-    "status": "pending"
+    "status": "done",
+    "started_at": "2026-08-14 00:54:25",
+    "finished_at": "2026-08-14 01:15:40",
+    "elapsed_seconds": 1275.1,
+    "returncode": 0
   },
   {
     "name": "opf_small_case24",
@@ -33,7 +45,11 @@
     "network": "case24_ieee_rts",
     "mode": "opf",
     "scenarios": 1000,
-    "status": "pending"
+    "status": "done",
+    "started_at": "2026-08-14 01:15:40",
+    "finished_at": "2026-08-14 01:17:11",
+    "elapsed_seconds": 91.6,
+    "returncode": 0
   },
   {
     "name": "opf_medium_case118",
@@ -42,7 +58,11 @@
     "network": "case118_ieee",
     "mode": "opf",
     "scenarios": 400,
-    "status": "pending"
+    "status": "done",
+    "started_at": "2026-08-14 01:17:11",
+    "finished_at": "2026-08-14 01:18:29",
+    "elapsed_seconds": 77.5,
+    "returncode": 0
   },
   {
     "name": "opf_large_case500",
@@ -51,7 +71,11 @@
     "network": "case500_goc",
     "mode": "opf",
     "scenarios": 150,
-    "status": "pending"
+    "status": "done",
+    "started_at": "2026-08-14 01:18:29",
+    "finished_at": "2026-08-14 01:20:08",
+    "elapsed_seconds": 99.6,
+    "returncode": 0
   },
   {
     "name": "contingency_small_case24",
@@ -60,7 +84,11 @@
     "network": "case24_ieee_rts",
     "mode": "pf",
     "scenarios": 500,
-    "status": "pending"
+    "status": "done",
+    "started_at": "2026-08-14 01:20:08",
+    "finished_at": "2026-08-14 01:21:20",
+    "elapsed_seconds": 71.2,
+    "returncode": 0
   },
   {
     "name": "contingency_medium_case118",
@@ -69,7 +97,11 @@
     "network": "case118_ieee",
     "mode": "pf",
     "scenarios": 300,
-    "status": "pending"
+    "status": "done",
+    "started_at": "2026-08-14 01:21:20",
+    "finished_at": "2026-08-14 01:25:18",
+    "elapsed_seconds": 238.0,
+    "returncode": 0
   },
   {
     "name": "contingency_large_case2000",
@@ -78,7 +110,9 @@
     "network": "case2000_goc",
     "mode": "pf",
     "scenarios": 50,
-    "status": "pending"
+    "status": "skipped",
+    "started_at": "2026-08-14 09:51:25",
+    "note": "Deferred to HPC: case2000_goc (2000 bus, 3639 branches) is too slow for this workstation for this dataset size/config."
   },
   {
     "name": "line_param_small_case24",
@@ -87,7 +121,8 @@
     "network": "case24_ieee_rts",
     "mode": "pf",
     "scenarios": 3000,
-    "status": "pending"
+    "status": "running",
+    "started_at": "2026-08-14 10:23:27"
   },
   {
     "name": "line_param_medium_case118",
@@ -159,7 +194,8 @@
     "network": "case2000_goc",
     "mode": "pf",
     "scenarios": 300,
-    "status": "pending"
+    "status": "skipped",
+    "note": "Deferred to HPC: case2000_goc (2000 bus, 3639 branches) is too slow for this workstation for this dataset size/config."
   },
   {
     "name": "loadability_case57_ieee",
@@ -186,7 +222,8 @@
     "network": "case2000_goc",
     "mode": "pf",
     "scenarios": 500,
-    "status": "pending"
+    "status": "skipped",
+    "note": "Deferred to HPC: case2000_goc (2000 bus, 3639 branches) is too slow for this workstation for this dataset size/config."
   },
   {
     "name": "cost_sweep_sigma0.2",
@@ -276,6 +313,7 @@
     "network": "case2000_goc",
     "mode": "pf",
     "scenarios": 800,
-    "status": "pending"
+    "status": "skipped",
+    "note": "Deferred to HPC: case2000_goc (2000 bus, 3639 branches) is too slow for this workstation for this dataset size/config."
   }
 ]

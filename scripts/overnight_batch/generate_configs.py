@@ -205,7 +205,11 @@ add(
         "contingency_large_case2000",
         topology_type="n_minus_k",
         k=1,
-        pf_fast=False,
+        # pf_fast=True here: exhaustive n_minus_k multiplies the per-solve cost
+        # by branches-in-service (3634 for case2000_goc), so the slow
+        # Ipopt-based PF path turns this into a multi-hour job. Confirmed
+        # live: with pf_fast=False, 32 workers at 99% CPU still produced zero
+        # completed scenarios after 38 minutes.
     ),
 )
 
