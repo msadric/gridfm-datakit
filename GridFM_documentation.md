@@ -326,6 +326,187 @@ after another (`run_all.py`) was drafted but the file write was denied by
 the user, so it has not been created yet. The config generator itself has
 been run and the configs exist, but the batch has not started.
 
+## Overnight batch: execution and results (2026-08-14)
+
+Repository: `gridfm-datakit`
+
+Follow-up to the plan recorded above. The batch ran overnight as a fully
+detached process (survives the terminal session ending), with two live
+fixes applied while it ran:
+
+- `contingency_large_case2000` had `pf_fast: false` in its generated config.
+  On a grid this size, with exhaustive `n_minus_k` multiplying the
+  per-scenario solve count by branches-in-service (3634 for `case2000_goc`),
+  this turned into a multi-hour job. Confirmed live: 32 workers at 99% CPU,
+  zero completed scenarios after 38 minutes. Fixed in both the live config
+  and `generate_configs.py`.
+- Even after that fix, `case2000_goc` (3639 branches, the clear outlier
+  among the grids used) was still too slow at the planned sizes for a
+  single workstation. Deferred four datasets to be run on HPC instead:
+  `contingency_large_case2000`, `solver_difficulty_case2000_goc`,
+  `loadability_case2000_goc`, `crossgrid_case2000_goc`. Their configs are
+  untouched and ready to run anywhere `gridfm-datakit` and Julia are set
+  up, no extra packaging needed. `pf_large_case2000`, which had already
+  finished (about 21 minutes), was left as done.
+- The batch driver (`run_all.py`) originally launched each dataset
+  subprocess in the same process group as itself. Killing a stuck job's
+  process group took down the whole driver by accident. Fixed by launching
+  each dataset subprocess with `start_new_session=True`, so a stuck job can
+  be killed on its own from then on.
+
+Final result: 27 of 31 datasets completed, 0 failed, 4 deferred to HPC.
+Every completed dataset was checked with `gridfm_datakit validate`
+(`scripts/overnight_batch/validate_all.py`): 27 out of 27 passed all 21
+validation checks.
+
+## gridfm-graphkit: setup, capability analysis, and experiments (2026-08-14)
+
+Repository: `gridfm-graphkit`
+
+### Setup
+
+Set up with `uv`, same as `gridfm-datakit`, but with a real GPU available
+on this machine (NVIDIA RTX 4500 Ada, 24GB, driver CUDA 12.8). Routed
+`torch`/`torchvision`/`torchaudio` through an explicit `pytorch-cu128`
+index in `pyproject.toml` so `uv sync` resolves CUDA wheels instead of
+CPU-only ones. Confirmed with `torch.cuda.is_available()` and a GPU matmul.
+
+Found and fixed a real packaging bug along the way: `torch_scatter` is
+imported directly in `training/loss.py` but was never declared as a
+dependency. A clean install fails with `ModuleNotFoundError`. Added it,
+pinned to the exact PyG wheel matching `torch==2.10.0+cu128` (PyG has no
+real package index for it, only per-torch-version wheel pages).
+
+### Capability analysis
+
+Wrote `docs/CAPABILITIES.md` (1484 lines, 15 sections) by reading the
+source directly. Confirmed findings, verified against source directly, not
+just accepted from the analysis pass:
+
+- `MaskedBusMSE` loss has a comparison bug.
+- `DATASET_WRAPPER_REGISTRY` is defined but never populated (the
+  `--dataset_wrapper` CLI flag references a plugin mechanism with nothing
+  registered).
+- `StateEstimationTask.predict_step` is a no-op stub.
+- `NUM_PROCESSES = 64` is hardcoded into the baseline runtime normalization
+  in `pf_ac_dc_baseline.py`.
+- `examples/notebooks/Tutorial_reconstruction_visualization.ipynb` imports
+  `LitGridDataModule` and `FeatureReconstructionTask`, neither of which
+  exists anywhere in the current codebase. Leftovers from a pre-`HeteroData`
+  version of the package. The notebook fails on its first import cell as
+  shipped.
+
+### Experiments
+
+All experiments trained on real `gridfm-datakit` output from the overnight
+batch above, not synthetic or toy data.
+
+Smoke test first: `PowerFlow` task, `GNS_heterogeneous` model, 5 epochs, on
+`pf_small_case14` (3000 scenarios, 14999 graphs after topology
+perturbation). Data loading, GPU training, and test evaluation all ran
+cleanly in under a minute. Hit one real bug in the process: the pinned
+`mlflow>=3.1.0` has deprecated the filesystem tracking backend that
+`gridfm_graphkit train` uses by default, so a stock invocation crashes
+immediately unless `MLFLOW_ALLOW_FILE_STORE=true` is set or `--log_dir`
+points at a database URI.
+
+Three comparisons, all using real data from last night's batch:
+
+**Model architecture, `GNS_heterogeneous` vs `GRIT`, same task and data
+(`case14_ieee`, `PowerFlow`).** The two use different loss compositions,
+so their test metrics are not directly comparable numbers, but wall clock
+is: GRIT took about 9.1 seconds per epoch against GNS's about 1 second,
+roughly 8.5x slower on the same 14 bus grid. Expected given GRIT is a much
+heavier model (496 hidden dim, attention, 7 layers versus GNS's 48 hidden
+dim, 12 layers).
+
+**Task, `PowerFlow` vs `OptimalPowerFlow` vs `StateEstimation`, all
+`GNS_heterogeneous`, matched epoch budget.** PowerFlow and
+OptimalPowerFlow both produced a final `--report-performance` test metric.
+StateEstimation's test loop ran cleanly (4 of 4 batches) but never printed
+a final performance metric, unlike the other two tasks. Worth checking
+before relying on `--report-performance` for state estimation runs.
+
+**Grid size scaling, `PowerFlow` + `GNS_heterogeneous`, identical config
+across `crossgrid_case14_ieee` through `crossgrid_case500_goc` (14 to 500
+buses), 15 epochs each.** Per-epoch training time scaled sub-linearly with
+grid size: about 1 second at 14 buses, about 7.6 seconds at 500 buses,
+roughly 7x time for about 36x more buses. Consistent with efficient batched
+GPU training. Raw test residuals did not trend cleanly with grid size,
+expected since these are unnormalized residuals after only 15 epochs, not
+converged quality.
+
+## GridSFM: setup, capability analysis, and experiments (2026-08-14)
+
+Repository: `GridSFM` (Microsoft, not one of the two GridFM repositories
+named in this document's guidelines, but closely related work done in the
+same session, so recorded here too)
+
+### Setup
+
+`model/` (the `gridsfm` Python package, a pretrained AC-OPF inference
+surrogate) set up with `uv`, CUDA 12.8 torch build, same pattern as
+`gridfm-graphkit`. `power_grid/` is a pure Julia pipeline plus a small
+Python viewer, no `uv` setup needed there. Full test suite passes: 20
+passed, 18 skipped.
+
+### Capability analysis
+
+Wrote `docs/CAPABILITIES.md` (978 lines, 15 sections). Corrected two
+inaccuracies found in an earlier draft (from a first analysis pass that
+died mid-write when the account hit its usage limit, leaving a partial
+file behind that a retry pass then verified and fixed rather than
+rewriting from scratch):
+
+- The Makefile's `solve`/`local-solve` targets do chain `patch_model.jl`
+  before solving. An earlier draft claimed they did not and called this a
+  footgun. Confirmed false by reading the current `Makefile` directly.
+- The model test suite has exactly 38 tests, not the roughly 60 an earlier
+  draft estimated. Confirmed with `pytest --collect-only`.
+
+### Experiments
+
+GridSFM is an inference package built around two released checkpoints
+(`gridsfm_open_v1.1.pt` recommended, `v1.0` deprecated), not a training
+framework, so the experiments here are inference benchmarks, not training
+comparisons.
+
+**Sample benchmark** (`examples/infer_samples.py`, unmodified, as shipped):
+ran the recommended checkpoint on all 53 shipped `.pyg.json` samples (14 to
+3889 buses), each with a ground truth AC-OPF solution attached. Result: 53
+of 53 correctly classified feasible, cost prediction mean error 0.61
+percent (median 0.40 percent), voltage MAE 0.003 per unit, angle MAE about
+1.2 degrees. Total time for all 53 mixed size grids: 4.0 seconds
+preparation plus 1.6 seconds forward pass on GPU. One real outlier:
+`case3022_goc` had angle MAE of 12.2 degrees and Pg MAE of 0.13 per unit,
+far outside the rest of the pack. Not a size effect, since the larger
+`case3375wp_k` did fine. Likely a genuinely hard instance, `goc` cases are
+known to be tightly constrained PGLib benchmarks. Caveat on the whole
+benchmark: these are the unperturbed base cases the model's own training
+perturbations were built from, so this measures in family generalization,
+not truly novel data.
+
+**Cache and latency scaling** (small benchmarking script written using
+only existing `gridsfm` API calls, no new data or format conversion code,
+per explicit instruction not to build new format-bridging tooling for this
+session): two findings.
+
+- Per-graph inference latency scales sub-linearly with grid size: about
+  2.2x latency for about 7.8x more buses (500 to 3889 buses, 68ms to 152ms).
+- Cache warm-up shows a real cold versus warm effect (554ms first call
+  versus 106ms mean afterward on a repeated topology, about 5.2x speedup),
+  but individual warm call latencies were noisy (51 to 319ms), so the
+  caching contribution could not be cleanly isolated from GPU or scheduling
+  noise with this simple a benchmark. Real effect, uncertain magnitude.
+
+An idea for a cross-repo experiment was raised and explicitly declined for
+this session: converting `gridfm-datakit` OPF ground truth (solved by an
+independent PowerModels and Ipopt pipeline) into GridSFM's `.pyg.json`
+schema, to test the pretrained model's generalization to data from a
+completely different generation pipeline. Two generator fields
+(`mbase`, `Vg`) are not present in `gridfm-datakit`'s output and would need
+approximated proxies. Not attempted, left as a possible follow-up.
+
 ## Commit Log
 
 Record completed work in this format:
@@ -343,3 +524,15 @@ Record completed work in this format:
 | `gridfm-datakit` | `bcfca08` | Add admittance-perturbation sigma sweep configs |
 | `gridfm-datakit` | `65bf770` | Add full capability reference (docs/CAPABILITIES.md) |
 | `gridfm-datakit` | `b10ed07` | Document the pfdelta/opf_data converters and scripts/ tooling |
+| `gridfm-datakit` | `788af36` | Document ML task coverage findings and the overnight batch dataset plan |
+| `gridfm-datakit` | `7ed2b64` | Generate the 31 overnight-batch dataset configs |
+| `gridfm-datakit` | `9d5eb97` | Add sequential driver for the overnight batch dataset run |
+| `gridfm-datakit` | `68a864d` | Defer case2000_goc datasets to HPC, fix driver process isolation |
+| `gridfm-datakit` | `3c66d51` | Add validate_all.py, confirm all 27 overnight batch datasets pass |
+| `gridfm-graphkit` | `8b51422` | Add uv support, pin CUDA torch stack, fix missing torch_scatter dependency |
+| `gridfm-graphkit` | `d1e6d5f` | Add full capability reference (docs/CAPABILITIES.md) |
+| `gridfm-graphkit` | `946770f` | Add smoke-test config, verify training pipeline end-to-end |
+| `gridfm-graphkit` | `8cf8bdc` | Add experiment configs: model/task comparison and grid-size scaling |
+| `GridSFM` | `acbe02a` | Set up uv for model/, pinned to CUDA 12.8 torch build |
+| `GridSFM` | `c1d2cde` | Add full capability reference (docs/CAPABILITIES.md) |
+| `GridSFM` | `58adfe1` | Add small benchmarking script: cache warm-up and latency-vs-size scaling |
